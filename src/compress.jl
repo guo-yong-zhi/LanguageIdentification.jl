@@ -46,7 +46,7 @@ function rlcs_zip(Z, str)
     ec(i) = i <= 11 ? ('0' + i - 2) : (i <= 37 ? 'a' + i - 12 : 'A' + i - 38)
     best = 0, str, "", ""
     for rk in 1:min(Z.rank, Z.counter)
-        refer = Z.pool[(Z.counter - rk + 1) % Z.rank + 1]
+        refer = Z.pool[(Z.counter-rk+1)%Z.rank+1]
         # @show rk refer
         l, h, c, t = lcs_zip(str, refer)
         rk > 1 && (l -= 2)
@@ -62,7 +62,7 @@ function rlcs_zip(Z, str)
     end
     Z.counter += 1
     zip_str = string(best[2], best[3], best[4])
-    Z.rank > 0 && (Z.pool[Z.counter % Z.rank + 1] = str)
+    Z.rank > 0 && (Z.pool[Z.counter%Z.rank+1] = str)
     return zip_str
 end
 
@@ -76,9 +76,9 @@ function rlcs_unzip(Z, str)
             rk = 1
         else
             b2 = first(findnext(r"[A-Z]", str, _b2 + 2))
-            rk = dc(str[_b2 + 1])
+            rk = dc(str[_b2+1])
         end
-        refer = Z.pool[(Z.counter - rk + 1) % Z.rank + 1]
+        refer = Z.pool[(Z.counter-rk+1)%Z.rank+1]
         b1 = str[b2] - 'A' + 1
         e2 = b2 + 1
         if e2 > length(str) || !('A' <= str[e2] <= 'Z')
@@ -92,6 +92,6 @@ function rlcs_unzip(Z, str)
         str = string(str[1:_b2-1], refer[b1:e1], str[e2+1:end])
     end
     Z.counter += 1
-    Z.rank > 0 && (Z.pool[Z.counter % Z.rank + 1] = str)
+    Z.rank > 0 && (Z.pool[Z.counter%Z.rank+1] = str)
     return str
 end
