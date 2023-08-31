@@ -1,6 +1,7 @@
 # LanguageIdentification.jl
-
 [![docs](https://img.shields.io/badge/docs-dev-blue.svg)](https://guo-yong-zhi.github.io/LanguageIdentification.jl/dev) [![CI](https://github.com/guo-yong-zhi/LanguageIdentification.jl/actions/workflows/ci.yml/badge.svg)](https://github.com/guo-yong-zhi/LanguageIdentification.jl/actions/workflows/ci.yml) [![CI-nightly](https://github.com/guo-yong-zhi/LanguageIdentification.jl/actions/workflows/ci-nightly.yml/badge.svg)](https://github.com/guo-yong-zhi/LanguageIdentification.jl/actions/workflows/ci-nightly.yml) [![codecov](https://codecov.io/gh/guo-yong-zhi/LanguageIdentification.jl/graph/badge.svg?token=lwDSoRUTmH)](https://codecov.io/gh/guo-yong-zhi/LanguageIdentification.jl)
+
+`LanguageIdentification.jl` is a Julia package for identifying the language of a given text. It currently supports `50` languages (see below). This package is lightweight and has no dependencies.
 # Installation
 ```julia
 import Pkg; Pkg.add("LanguageIdentification")
@@ -11,7 +12,7 @@ After loading the package, initialization is required. Different parameters have
 using LanguageIdentification
 LanguageIdentification.initialize()
 ```
-Currently, `LanguageIdentification.jl` supports the identification of 50 languages. You can check them with the following command, where the language is represented by the [ISO 639-3](https://en.wikipedia.org/wiki/ISO_639_macrolanguage) code.
+Currently, `LanguageIdentification.jl` supports the identification of 50 languages. You can check them with the following command. The language is represented by the [ISO 639-3](https://en.wikipedia.org/wiki/ISO_639_macrolanguage) code.
 ```julia
 LanguageIdentification.supported_languages()
 ```
