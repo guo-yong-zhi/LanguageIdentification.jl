@@ -1,5 +1,5 @@
 using Documenter
-using WordCloud
+using LanguageIdentification
 
 Documenter.makedocs(
     clean = true,
