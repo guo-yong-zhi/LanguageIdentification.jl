@@ -20,4 +20,5 @@ using Test
     LI.initialize(vocabulary=200)
     @test all(last.(LI.vocabulary_sizes()) .== 201)
     LI.initialize(cutoff=0.5)
+    LI.initialize(cutoff=0.75, vocabulary=200:1000)
 end
