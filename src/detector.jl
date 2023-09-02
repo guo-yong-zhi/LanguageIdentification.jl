@@ -25,7 +25,7 @@ end
 """
     initialize(; languages=supported_languages(), ngram=4, cutoff=0.85, vocabulary=100000)
 
-Initialize the language detector with the given parameters. This function must be called before any other function in this package. Different parameters have different balances among accuracy, speed, and memory usage. 
+Initialize the language detector with the given parameters. Different parameters have different balances among accuracy, speed, and memory usage. 
 
 # Arguments
 - `languages::Vector{String}`: A list of languages to be used for language detection. If this argument is not provided, all the languages returned by the [`supported_languages`](@ref) function will be used.
@@ -51,6 +51,12 @@ function initialize(; languages=supported_languages(), ngram=4, cutoff=0.85, voc
     nothing
 end
 
+function makesure_initialized()
+    if length(LANGUAGES) == 0
+        @info "Initializing with default parameters."
+        initialize()
+    end
+end
 
 function load_profile(lang, ngramrange::AbstractRange, cutoff, vocabularyrange)
     vocmin, vocmax = first(vocabularyrange), last(vocabularyrange)
@@ -71,7 +77,6 @@ function load_profile(lang, ngramrange::AbstractRange, cutoff, vocabularyrange)
     # cums >= threshold || @info "$lang: cutoff($cutoff) not reached. current: $(cums / total). vocab size: $(length(P))"
     normalize_profile!(Dict(P))
 end
-
 
 function normalize_profile!(P)
     vs = sum(values(P))
@@ -109,12 +114,14 @@ function langid(text::AbstractString, languages::Vector{String}, profiles::Vecto
     lls = loglikelihood.(Ref(p), profiles)
     languages[argmax(lls)]
 end
-function langid(text::AbstractString, languages::Vector{String}; ngram=NGRAM)
+function langid(text::AbstractString, languages::Vector{String}; kwargs...)
+    makesure_initialized()
     inds = [findfirst(isequal(l), LANGUAGES) for l in languages]
-    langid(text, languages, PROFILES[inds]; ngram=ngram)
+    langid(text, languages, PROFILES[inds]; kwargs...)
 end
-function langid(text::AbstractString; ngram=NGRAM)
-    langid(text, LANGUAGES, PROFILES; ngram=ngram)
+function langid(text::AbstractString; kwargs...)
+    makesure_initialized()
+    langid(text, LANGUAGES, PROFILES; kwargs...)
 end
 
 """
@@ -142,10 +149,12 @@ function langprob(text::AbstractString, languages::Vector{String}, profiles::Vec
     si = sortperm(ls, rev=true)[1:min(end, topk)]
     [k => v for (k, v) in zip(languages[si], ls[si])]
 end
-function langprob(text::AbstractString, languages::Vector{String}; topk=5, ngram=NGRAM)
+function langprob(text::AbstractString, languages::Vector{String}; kwargs...)
+    makesure_initialized()
     inds = [findfirst(isequal(l), LANGUAGES) for l in languages]
-    langprob(text, languages, PROFILES[inds]; topk=topk, ngram=ngram)
+    langprob(text, languages, PROFILES[inds]; kwargs...)
 end
-function langprob(text::AbstractString; topk=5, ngram=NGRAM)
-    langprob(text, LANGUAGES, PROFILES; topk=topk, ngram=ngram)
+function langprob(text::AbstractString; kwargs...)
+    makesure_initialized()
+    langprob(text, LANGUAGES, PROFILES; kwargs...)
 end

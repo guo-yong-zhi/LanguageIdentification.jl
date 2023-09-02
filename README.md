@@ -7,7 +7,7 @@
 import Pkg; Pkg.add("LanguageIdentification")
 ```
 # Usage
-After loading the package, initialization is required. Different parameters have different balances among accuracy, speed, and memory usage. See the documentation for details. 
+Before using the language identification functionality, you need to initialize the package. This process involves setting some parameters that balance accuracy, speed, and memory usage. If you don't manually initialize the package, it will use default parameters. For more information, please refer to the documentation.
 ```julia
 using LanguageIdentification
 LanguageIdentification.initialize()

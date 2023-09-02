@@ -3,7 +3,7 @@ import LanguageIdentification as LI
 using Test
 @testset "LanguageIdentification.jl" begin
     # @show LI.supported_languages()
-    LI.initialize()
+    # LI.makesure_initialized()
     @test length(LI.supported_languages()) == 50
     @test langid("This is a test.") == "eng"
     @test langid("这是一个测试。") == "zho"
