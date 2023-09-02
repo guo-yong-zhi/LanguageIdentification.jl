@@ -79,15 +79,8 @@ function load_profile(lang, ngramrange::AbstractRange, cutoff, vocabularyrange)
 end
 
 function normalize_profile!(P)
-    cnts = zeros(7)
-    sums = zeros(7)
-    for (k, v) in P
-        cnts[length(k)] += 1
-        sums[length(k)] += v
-    end
-    for (k, v) in P
-        P[k] = log(v / sums[length(k)] * cnts[length(k)])
-    end
+    vs = sum(values(P))
+    map!(v -> log(v / vs), values(P))
     P
 end
 
