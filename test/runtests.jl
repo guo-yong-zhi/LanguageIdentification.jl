@@ -2,7 +2,7 @@ using LanguageIdentification
 import LanguageIdentification as LI
 using Test
 @testset "LanguageIdentification.jl" begin
-    @show LI.supported_languages()
+    # @show LI.supported_languages()
     LI.initialize()
     @test length(LI.supported_languages()) == 50
     @test langid("This is a test.") == "eng"
@@ -17,5 +17,7 @@ using Test
     @test sum(last.(langprob("This is a test.", topk=50))) ≈ 1.0
     @test langprob("这是一个测试。", topk=1) |> only |> first == "zho"
     @test langprob("これはテストです。", ["zho", "ara"], topk=30) |> length == 2
-
+    LI.initialize(vocabulary=200)
+    @test all(last.(LI.vocabulary_sizes()) .== 201)
+    LI.initialize(cutoff=0.5)
 end

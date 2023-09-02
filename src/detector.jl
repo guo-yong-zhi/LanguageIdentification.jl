@@ -23,7 +23,7 @@ function vocabulary_sizes()
 end
 
 """
-    initialize(; languages=supported_languages(), ngram=4, cutoff=0.85, vocabulary_size=100000)
+    initialize(; languages=supported_languages(), ngram=4, cutoff=0.85, vocabulary=100000)
 
 Initialize the language detector with the given parameters. This function must be called before any other function in this package. Different parameters have different balances among accuracy, speed, and memory usage. 
 
@@ -31,15 +31,15 @@ Initialize the language detector with the given parameters. This function must b
 - `languages::Vector{String}`: A list of languages to be used for language detection. If this argument is not provided, all the languages returned by the [`supported_languages`](@ref) function will be used.
 - `ngram::Union{Int, AbstractRange}`: The length of utf-8 byte n-grams to use for language detection. A range can be provided to use multiple n-gram sizes. An integer value will be converted to a range from 1 to the given value. The default value is 4.
 - `cutoff::Float64`: The cutoff value of the cumulative probability of the n-grams to use for language detection. The default value is 0.85, and it must be between 0 and 1.
-- `vocabulary_size::Int`: The maximum size of the vocabulary of each language. The default value is 100000.
+- `vocabulary::Int`: The maximum size of the vocabulary of each language. The default value is 5000.
 """
-function initialize(; languages=supported_languages(), ngram=4, cutoff=0.85, vocabulary_size=100000)
+function initialize(; languages=supported_languages(), ngram=4, cutoff=0.85, vocabulary=5000)
     ngram = ngram isa AbstractRange ? ngram : 1:ngram
     empty!(LANGUAGES)
     append!(LANGUAGES, languages)
     empty!(PROFILES)
     for lang in LANGUAGES
-        push!(PROFILES, load_profile(lang, ngram, cutoff, vocabulary_size))
+        push!(PROFILES, load_profile(lang, ngram, cutoff, vocabulary))
     end
     unk_decay = 0.1
     unk_logp_list = minimum.(values.(PROFILES), init=typemax(Float32)) .+ log(unk_decay)
@@ -51,7 +51,7 @@ function initialize(; languages=supported_languages(), ngram=4, cutoff=0.85, voc
 end
 
 
-function load_profile(lang, ngramrange::AbstractRange, cutoff, vocabulary_size)
+function load_profile(lang, ngramrange::AbstractRange, cutoff, vocabulary)
     hd, rows = ngram_table(joinpath(PROFILE_PATH, lang * ".txt"))
     total = sum(hd[ngramrange])
     threshold = cutoff * total
@@ -61,7 +61,7 @@ function load_profile(lang, ngramrange::AbstractRange, cutoff, vocabulary_size)
         if length(k) in ngramrange
             cums += v
             push!(P, k => v)
-            if cums >= threshold || length(P) >= vocabulary_size
+            if cums >= threshold || length(P) >= vocabulary
                 break
             end
         end
