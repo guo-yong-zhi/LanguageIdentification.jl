@@ -5,7 +5,7 @@ const ALL_LANGUAGES = [f[1:end-4] for f in readdir(PROFILE_PATH)]
 const LANGUAGES = String[]
 const PROFILES = Vector{Dict{Vector{UInt8},Float32}}()
 const UNK = UInt8[]
-NGRAM::UnitRange{Int64} = 0:0
+const NGRAM = Int[]
 
 """
 supported_languages() -> Vector{String}
@@ -29,25 +29,26 @@ Initialize the language detector with the given parameters. Different parameters
 
 # Arguments
 - `languages::Vector{String}`: A list of languages to be used for language detection. If this argument is not provided, all the languages returned by the [`supported_languages`](@ref) function will be used.
-- `ngram::Union{Int, AbstractRange}`: The length of utf-8 byte n-grams to use for language detection. A range can be provided to use multiple n-gram sizes. An integer value will be converted to a range from 1 to the given value. The default value is 4.
+- `ngram::Union{Int, AbstractVector}`: The length of utf-8 byte n-grams to use for language detection. A range can be provided to use multiple n-gram sizes. An integer value will be converted to a range from 1 to the given value. The default value is 4.
 - `cutoff::Float64`: The cutoff value of the cumulative probability of the n-grams to use for language detection. The default value is 0.85, and it must be between 0 and 1.
 - `vocabulary::Union{Int, AbstractRange}`: The size range of the vocabulary of each language. The default value is 1000:5000.
 """
 function initialize(; languages=supported_languages(), ngram=4, cutoff=0.85, vocabulary=1000:5000)
-    ngram = ngram isa AbstractRange ? ngram : 1:ngram
     vocabulary = vocabulary isa AbstractRange ? vocabulary : 1:vocabulary
+    ngram = ngram isa AbstractVector ? ngram : 1:ngram
+    empty!(NGRAM)
+    append!(NGRAM, ngram)
     empty!(LANGUAGES)
     append!(LANGUAGES, languages)
     empty!(PROFILES)
     for lang in LANGUAGES
-        push!(PROFILES, load_profile(lang, ngram, cutoff, vocabulary))
+        push!(PROFILES, load_profile(lang, NGRAM, cutoff, vocabulary))
     end
     unk_decay = 0.01
     for P in PROFILES
         logp = minimum(values(P), init=typemax(Float32)) + log(unk_decay)
         P[UNK] = logp
     end
-    global NGRAM = ngram
     nothing
 end
 
@@ -58,15 +59,15 @@ function makesure_initialized()
     end
 end
 
-function load_profile(lang, ngramrange::AbstractRange, cutoff, vocabularyrange)
+function load_profile(lang, ngram_list::AbstractVector, cutoff, vocabularyrange)
     vocmin, vocmax = first(vocabularyrange), last(vocabularyrange)
     hd, rows = ngram_table(joinpath(PROFILE_PATH, lang * ".txt"))
-    total = sum(hd[ngramrange])
+    total = sum(hd[ngram_list])
     threshold = cutoff * total
     cums = 0.0
     P = Pair{Vector{UInt8},Float32}[]
     for (k, v) in rows
-        if length(k) in ngramrange
+        if length(k) in ngram_list
             cums += v
             push!(P, k => v)
             if (length(P) >= vocmin) && (cums >= threshold || length(P) >= vocmax)
@@ -105,7 +106,7 @@ Return the language of the given text based on the provided language profiles.
 - `text::AbstractString`: The text to identify the language of.
 - `languages::Vector{String}`: The list of languages to choose from. Omitting this argument will use all supported languages.
 - `profiles::Vector{Dict{Vector{UInt8}, Float32}}`: The language profiles to use for identification. Omitting this argument will use the default profiles.
-- `ngram::Union{Int, AbstractRange}`: The length of utf-8 byte n-grams to use for language detection. The default value is the value set in [`initialize`](@ref), and should not exceed that value.
+- `ngram::Union{Int, AbstractVector}`: The length of utf-8 byte n-grams to use for language detection. The default value is the value set in [`initialize`](@ref), and should not exceed that value.
 # Returns
 - The language of the given text.
 """
@@ -134,7 +135,7 @@ Returns the probability distribution of the language of the given text based on 
 - `languages::Vector{String}`: A list of languages to choose from. If this argument is not provided, all the languages returned by the [`supported_languages`](@ref) function will be used.
 - `profiles::Vector{Dict{Vector{UInt8}, Float32}}`: The language profiles to use for identification. If this argument is not provided, the default profiles will be used.
 - `topk::Int`: The number of candidates to return. The default value is 5.
-- `ngram::Union{Int, AbstractRange}`: The length of utf-8 byte n-grams to use for language detection. The default value is the value set in [`initialize`](@ref), and should not exceed that value.
+- `ngram::Union{Int, AbstractVector}`: The length of utf-8 byte n-grams to use for language detection. The default value is the value set in [`initialize`](@ref), and should not exceed that value.
 
 # Returns
 - A list of the `topk` languages and their probabilities.

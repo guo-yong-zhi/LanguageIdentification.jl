@@ -19,7 +19,7 @@ function count_ngrams(text::AbstractString, n, counter=Dict{Vector{UInt8},Float3
     end
     counter
 end
-function count_all_ngrams(text::AbstractString, rg::AbstractRange=1:5, counter=Dict{Vector{UInt8},Float32}(); kwargs...)
+function count_all_ngrams(text::AbstractString, rg::AbstractVector=1:5, counter=Dict{Vector{UInt8},Float32}(); kwargs...)
     text = normalize_text(text; kwargs...)
     text = transcode(UInt8, string(text))
     for k in rg
