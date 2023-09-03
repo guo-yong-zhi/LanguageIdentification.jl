@@ -79,8 +79,17 @@ function load_profile(lang, ngramrange::AbstractRange, cutoff, vocabularyrange)
 end
 
 function normalize_profile!(P)
-    vs = sum(values(P))
-    map!(v -> log(v / vs), values(P))
+    sums = zeros(7)
+    for (k, v) in P
+        sums[length(k)] += v
+    end
+    weights = log1p.(sums)
+    weights .*= sum(weights .!= 0) / sum(weights) # mean(weights) == 1
+    scale = weights ./ sums
+    logscale = log.(scale)
+    for (k, v) in P
+        P[k] = log(v) + logscale[length(k)]
+    end
     P
 end
 
