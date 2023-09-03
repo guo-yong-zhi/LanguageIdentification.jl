@@ -14,6 +14,10 @@ using Test
     @test langid("यह एक परीक्षण है।") == "hin"
     @test langid("এটি একটি পরীক্ষা।") == "ben"
     @test langid("این یک آزمایش است.") == "fas"
+    @test langid("این یک آزمایش است.", ["jpn", "eng"]) in ["jpn", "eng"]
+    langid("این یک آزمایش است.", ngram=[2, 4])
+    langid("", ngram=3)
+    langid(" ", ngram=3:4)
     @test sum(last.(langprob("This is a test.", topk=50))) ≈ 1.0
     @test langprob("这是一个测试。", topk=1) |> only |> first == "zho"
     @test langprob("これはテストです。", ["zho", "ara"], topk=30) |> length == 2
@@ -21,4 +25,6 @@ using Test
     @test all(last.(LI.vocabulary_sizes()) .== 201)
     LI.initialize(cutoff=0.5)
     LI.initialize(cutoff=0.75, vocabulary=200:1000)
+    LI.initialize(languages=["rus", "ara", "hin"])
+    @test length(LI.PROFILES) == 3
 end
