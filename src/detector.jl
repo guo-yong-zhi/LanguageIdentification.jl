@@ -33,7 +33,7 @@ Initialize the language detector with the given parameters. Different parameters
 - `cutoff::Float64`: The cutoff value of the cumulative probability of the n-grams to use for language detection. The default value is 0.85, and it must be between 0 and 1.
 - `vocabulary::Union{Int, AbstractRange}`: The size range of the vocabulary of each language. The default value is 1000:5000.
 """
-function initialize(; languages=supported_languages(), ngram=4, cutoff=0.85, vocabulary=1000:5000)
+function initialize(; languages=supported_languages(), ngram=4, cutoff=0.85, vocabulary=1000:5000, path=PROFILE_PATH)
     vocabulary = vocabulary isa AbstractRange ? vocabulary : 1:vocabulary
     ngram = ngram isa AbstractVector ? ngram : 1:ngram
     empty!(NGRAM)
@@ -42,7 +42,7 @@ function initialize(; languages=supported_languages(), ngram=4, cutoff=0.85, voc
     append!(LANGUAGES, languages)
     empty!(PROFILES)
     for lang in LANGUAGES
-        push!(PROFILES, load_profile(lang, NGRAM, cutoff, vocabulary))
+        push!(PROFILES, load_profile(lang, NGRAM, cutoff, vocabulary; path=path))
     end
     unk_decay = 0.01
     for P in PROFILES
@@ -59,9 +59,9 @@ function makesure_initialized()
     end
 end
 
-function load_profile(lang, ngram_list::AbstractVector, cutoff, vocabularyrange)
+function load_profile(lang, ngram_list::AbstractVector, cutoff, vocabularyrange; path=PROFILE_PATH)
     vocmin, vocmax = first(vocabularyrange), last(vocabularyrange)
-    hd, rows = ngram_table(joinpath(PROFILE_PATH, lang * ".txt"))
+    hd, rows = ngram_table(joinpath(path, lang * ".txt"))
     total = sum(hd[ngram_list])
     threshold = cutoff * total
     cums = 0.0
