@@ -8,7 +8,7 @@ const UNK = UInt8[]
 const NGRAM = Int[]
 
 """
-supported_languages() -> Vector{String}
+    supported_languages() -> Vector{String}
 
 Return a vector containing all the languages (ISO 639-3 codes) that are supported by this package. 
 """
@@ -86,7 +86,7 @@ function normalize_profile!(P)
 end
 
 function loglikelihood(p_dict, logq_dict)
-    sc = 0.0
+    sc = zero(valtype(p_dict))
     for (code, p) in p_dict
         if !haskey(logq_dict, code)
             code = UNK

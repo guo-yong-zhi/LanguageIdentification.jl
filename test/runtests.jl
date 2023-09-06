@@ -18,7 +18,8 @@ using Test
     langid("این یک آزمایش است.", ngram=[2, 4])
     langid("", ngram=3)
     langid(" ", ngram=3:4)
-    @test sum(last.(langprob("This is a test.", topk=50))) ≈ 1.0
+    langid(" ", ngram=5:7)
+    @test sum(last.(langprob("This is a test.", topk=length(LI.supported_languages())))) ≈ 1.0
     @test langprob("这是一个测试。", topk=1) |> only |> first == "zho"
     @test langprob("これはテストです。", ["zho", "ara"], topk=30) |> length == 2
     LI.initialize(vocabulary=200)
