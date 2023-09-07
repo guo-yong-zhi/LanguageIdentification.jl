@@ -19,8 +19,11 @@ using Test
     langid("", ngram=3)
     langid(" ", ngram=3:4)
     langid(" ", ngram=5:7)
+    @test langid(Set(["This", "is", "a", "test", "."])) == "eng"
+    @test langid(["这是", "一个", "测试", "。"]) == "zho"
     @test sum(last.(langprob("This is a test.", topk=length(LI.supported_languages())))) ≈ 1.0
     @test langprob("这是一个测试。", topk=1) |> only |> first == "zho"
+    @test langprob(["这是", "一个", "测试", "。"], topk=1) |> only |> first == "zho"
     @test langprob("これはテストです。", ["zho", "ara"], topk=30) |> length == 2
     LI.initialize(vocabulary=200)
     @test all(last.(LI.vocabulary_sizes()) .== 201)

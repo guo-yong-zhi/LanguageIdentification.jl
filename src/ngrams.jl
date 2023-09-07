@@ -33,7 +33,12 @@ end
 function count_all_ngrams(text::AbstractString, n::Int, counter=Dict{Vector{UInt8},Float32}(); kwargs...)
     count_all_ngrams(text, 1:n, counter; kwargs...)
 end
-
+function count_all_ngrams(text_list, n, counter = Dict{Vector{UInt8},Float32}(); kwargs...)
+    for text in text_list
+        count_all_ngrams(text, n, counter; kwargs...)
+    end
+    counter
+end
 
 # function count_dataset_ngrams(dataset, n; kwargs...)
 #     counters = [Dict{Vector{UInt8},Float32}() for i in 1:n]
