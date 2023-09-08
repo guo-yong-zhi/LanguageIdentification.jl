@@ -31,7 +31,7 @@ function count_all_ngrams(text::AbstractString, rg::AbstractVector=1:5, counter=
     counter
 end
 function count_all_ngrams(text::AbstractString, n::Int, counter=Dict{Vector{UInt8},Float32}(); kwargs...)
-    count_all_ngrams(text, 1:n, counter; kwargs...)
+    count_all_ngrams(text, n:n, counter; kwargs...)
 end
 function count_all_ngrams(text_list, n, counter = Dict{Vector{UInt8},Float32}(); kwargs...)
     for text in text_list
