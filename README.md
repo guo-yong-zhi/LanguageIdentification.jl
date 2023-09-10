@@ -63,21 +63,21 @@ We tested four language identification packages: `LanguageIdentification.jl` (th
 We calculated the average accuracy for the languages supported by multiple packages, and the results are as follows:
 - tatoeba
 
-|                               | 50 languages | 39 languages | 35 languages | 24 languages |
-|-------------------------------|--------------|--------------|--------------|--------------|
-| **LanguageIdentification.jl** |   **94.58%** |   **94.24%** |   **93.77%** |   **95.87%** |
-|                  Languages.jl |            - |       74.72% |       73.65% |       74.14% |
-|             LanguageDetect.jl |            - |            - |       80.81% |       80.61% |
-|             LanguageFinder.jl |            - |            - |            - |       79.70% |
+|                               | 50 languages | 39 languages | 38 languages | 35 languages | 24 languages |
+|-------------------------------|--------------|--------------|--------------|--------------|--------------|
+| LanguageIdentification.jl |   **94.58%** |   **94.24%** |   **93.89%** |   **93.77%** |   **95.87%** |
+|                  Languages.jl |            - |       74.72% |            - |       73.65% |       74.14% |
+|             LanguageDetect.jl |            - |            - |       79.72% |       80.81% |       80.61% |
+|             LanguageFinder.jl |            - |            - |            - |            - |       79.70% |
 
 - wikipedia
 
-|                               | 50 languages | 39 languages | 35 languages | 24 languages |
-|-------------------------------|--------------|--------------|--------------|--------------|
-| **LanguageIdentification.jl** |   **98.20%** |   **98.22%** |   **98.09%** |   **98.79%** |
-|                  Languages.jl |            - |       95.12% |       94.80% |       95.02% |
-|             LanguageDetect.jl |            - |            - |       85.49% |       86.23% |
-|             LanguageFinder.jl |            - |            - |            - |       94.75% |
+|                               | 50 languages | 39 languages | 38 languages | 35 languages | 24 languages |
+|-------------------------------|--------------|--------------|--------------|--------------|--------------|
+| LanguageIdentification.jl |   **98.20%** |   **98.22%** |   **98.14%** |   **98.09%** |   **98.79%** |
+|                  Languages.jl |            - |       95.12% |            - |       94.80% |       95.02% |
+|             LanguageDetect.jl |            - |            - |       85.36% |       85.49% |       86.23% |
+|             LanguageFinder.jl |            - |            - |            - |            - |       94.75% |
 
 # Parameter Tuning
 You can manually initialize the package using the `LanguageIdentification.initialize` function. By adjusting the parameters, you can achieve different balances between accuracy, speed, and memory usage. The default setting is `ngram=1:4`, `cutoff=0.85`, and `vocabulary=1000:5000`. However, this setting may not be optimal for your specific use case.  
