@@ -23,15 +23,15 @@ function vocabulary_sizes()
 end
 
 """
-    initialize(; languages=supported_languages(), ngram=4, cutoff=0.85, vocabulary=100000)
+    initialize(; languages=supported_languages(), ngram=1:4, cutoff=0.85, vocabulary=1000:5000)
 
 Initialize the language detector with the given parameters. Different parameters have different balances among accuracy, speed, and memory usage. 
 
 # Arguments
 - `languages::Vector{String}`: A list of languages to be used for language detection. If this argument is not provided, all the languages returned by the [`supported_languages`](@ref) function will be used.
-- `ngram::Union{Int, AbstractVector}`: Specifies the length of UTF-8 byte n-grams to be utilized for language detection. An integer value can be provided to use a single n-gram size, while a range can be provided to use multiple n-gram sizes. The default value is 1:4, and the maximum value allowed is 7.
-- `cutoff::Float64`: The cutoff value of the cumulative probability of the n-grams to use for language detection. The default value is 0.85, and it must be between 0 and 1.
-- `vocabulary::Union{Int, AbstractRange}`: The size range of the vocabulary of each language. The default value is 1000:5000.
+- `ngram::Union{Int, AbstractVector}`: Specifies the length of UTF-8 byte n-grams to be utilized for language detection. An integer value can be provided to use a single n-gram size, while a range can be provided to use multiple n-gram sizes. The default value is `1:4`, and the maximum value allowed is `7`.
+- `cutoff::Float64`: The cutoff value of the cumulative probability of the n-grams to use for language detection. The default value is `0.85`, and it must be between `0` and `1`.
+- `vocabulary::Union{Int, AbstractRange}`: The size range of the vocabulary of each language. The default value is `1000:5000`.
 """
 function initialize(; languages=supported_languages(), ngram=1:4, cutoff=0.85, vocabulary=1000:5000, path=PROFILE_PATH)
     vocabulary = vocabulary isa AbstractRange ? vocabulary : vocabulary:vocabulary
