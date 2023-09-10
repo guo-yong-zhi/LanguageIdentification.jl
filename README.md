@@ -7,10 +7,8 @@
 import Pkg; Pkg.add("LanguageIdentification")
 ```
 # Usage
-Before using the language identification functionality, you need to initialize the package. This process involves setting some parameters that balance accuracy, speed, and memory usage. If you don't manually initialize the package, it will use default parameters. For more information, please refer to the documentation.
 ```julia
 using LanguageIdentification
-LanguageIdentification.initialize()
 ```
 Currently, `LanguageIdentification.jl` supports the identification of 50 languages. You can check them with the following command. The language is represented by the [ISO 639-3](https://en.wikipedia.org/wiki/ISO_639_macrolanguage) code.
 ```julia
@@ -23,7 +21,7 @@ LanguageIdentification.supported_languages()
  "por", "ron", "rus", "slk", "spa", "swa", "swe", "tat", "tgl", "tur", "ukr", "vie", 
  "yid", "zho"]
 ```
-This package provides a simple interface to identify the language of a given text. The package exports two functions:
+This package provides simple interfaces:
 - `langid`: returns the language code of the tested text.
 - `langprob`: returns the probabilities of the tested text for each language.
 ```julia
@@ -42,7 +40,7 @@ langprob("这是一个测试。", topk=3)
 ```
 # Benchmark
 
-We tested four language identification packages: `LanguageIdentification.jl`, [`Languages.jl`](https://github.com/JuliaText/Languages.jl), [`LanguageDetect.jl`](https://github.com/SeanLee97/LanguageDetect.jl), and [`LanguageFinder`](https://github.com/nusretipek/LanguageFinder/tree/main/src) on a hold-out test set. The test set was sourced from [`tatoeba`](https://tatoeba.org) and [`wikipedia`](https://www.wikipedia.org/) and comprised of the 50 languages supported by this package. The complete test report can be found [here](https://github.com/guo-yong-zhi/langid_expirement/blob/main/benchmarks/compare/compare.md).
+We tested four language identification packages: `LanguageIdentification.jl` (this package), [`Languages.jl`](https://github.com/JuliaText/Languages.jl), [`LanguageDetect.jl`](https://github.com/SeanLee97/LanguageDetect.jl), and [`LanguageFinder`](https://github.com/nusretipek/LanguageFinder/tree/main/src) on a hold-out test set. The test set was sourced from [`tatoeba`](https://tatoeba.org) and [`wikipedia`](https://www.wikipedia.org/) and comprised of the 50 languages supported by this package. The complete test results can be found [here](https://github.com/guo-yong-zhi/langid_expirement/blob/main/benchmarks/compare/compare.md).
 
 - tatoeba
 
@@ -62,7 +60,7 @@ We tested four language identification packages: `LanguageIdentification.jl`, [`
 |         LanguageDetect.jl | **99.50%** |          - | **100.00%** |     80.00% |      79.00% |     80.50% |     61.00% |     81.00% | **100.00%** |      90.00% |           - |      99.00% |     94.50% |      90.00% |          - |       3.50% | **100.00%** |      94.00% |     93.50% |          - |          - |          - |      87.50% |     94.50% |          - |      95.00% |          - |          - |      96.50% | **97.00%** |     90.00% |     96.50% |          - |     74.00% |     55.50% |      94.00% |     78.50% |     74.00% |      91.00% |     77.00% |      77.50% |     95.50% |     69.00% |          - |     94.50% |     93.00% |      97.50% |     96.00% |          - |     74.00% |
 |         LanguageFinder.jl | **99.50%** |          - |           - |          - |           - |     96.00% | **98.50%** |     95.50% |      99.50% |      99.50% |           - |      99.00% | **99.50%** | **100.00%** |          - |           - | **100.00%** | **100.00%** |     96.00% |          - |          - |          - |      98.50% |          - |          - |      94.50% |          - |          - |           - |          - |          - |          - |          - | **98.50%** |     35.50% |      98.00% |     88.00% |          - | **100.00%** |          - | **100.00%** |          - |     97.00% |          - |          - |     96.00% |      99.50% |          - |          - |     85.50% |
 
-We calculated the average accuracy of each package on the intersection of supported languages, and the results are as follows:
+We calculated the average accuracy for the languages supported by multiple packages, and the results are as follows:
 - tatoeba
 
 |                               | 50 languages | 39 languages | 35 languages | 24 languages |
@@ -80,3 +78,27 @@ We calculated the average accuracy of each package on the intersection of suppor
 |                  Languages.jl |            - |       95.12% |       94.80% |       95.02% |
 |             LanguageDetect.jl |            - |            - |       85.49% |       86.23% |
 |             LanguageFinder.jl |            - |            - |            - |       94.75% |
+
+# Parameter Tuning
+You can manually initialize the package using the `LanguageIdentification.initialize` function. By adjusting the parameters, you can achieve different balances between accuracy, speed, and memory usage. The default setting is `ngram=1:4`, `cutoff=0.85`, and `vocabulary=1000:5000`. However, this setting may not be optimal for your specific use case.  
+For example, the table below shows that using a single-ngram setting of `ngram=4`, `cutoff=1.0`, and `vocabulary=5000` can achieve better accuracy on our tatoeba test set while also being much faster than the multi-ngrams setting. We choose the multi-ngrams as the default due to its stability. You can refer to our detailed benchmark results [here](https://github.com/guo-yong-zhi/langid_expirement/tree/main/benchmarks/matrix) as a reference for parameter tuning.
+
+|             | 100-vocab | 200-vocab | 500-vocab | 1000-vocab | 2000-vocab | 5000-vocab | 10000-vocab | 20000-vocab | 50000-vocab | 100000-vocab |
+|-------------|-----------|-----------|-----------|------------|------------|------------|-------------|-------------|-------------|--------------|
+| 1:1 - grams |    76.95% |    76.95% |         - |          - |          - |          - |           - |           - |           - |            - |
+| 1:2 - grams |    82.32% |    86.98% |    88.97% |     89.03% |     89.03% |     89.03% |           - |           - |           - |            - |
+| 1:3 - grams |    81.21% |    87.02% |    91.04% |     92.60% |     93.21% |     93.48% |      93.51% |      93.51% |      93.51% |            - |
+| 1:4 - grams |    80.10% |    86.03% |    91.35% |     93.08% |     94.28% |     95.10% |      95.49% |      95.62% |      95.64% |       95.64% |
+| 1:5 - grams |    79.97% |    85.36% |    90.69% |     92.97% |     94.48% |     95.51% |      96.15% |      96.62% |      96.85% |       96.85% |
+| 1:6 - grams |    79.63% |    84.85% |    90.52% |     92.78% |     94.37% |     95.60% |      96.12% |      96.75% |      97.28% |       97.38% |
+| 1:7 - grams |    78.99% |    84.35% |    90.51% |     92.67% |     94.23% |     95.55% |      96.04% |      96.68% |      97.37% |       97.55% |
+
+|                | 100-vocab | 200-vocab | 500-vocab | 1000-vocab | 2000-vocab | 5000-vocab | 10000-vocab | 20000-vocab | 50000-vocab |
+|----------------|-----------|-----------|-----------|------------|------------|------------|-------------|-------------|-------------|
+| single 1-grams |    76.95% |    76.95% |         - |          - |          - |          - |           - |           - |           - |
+| single 2-grams |    83.95% |    88.07% |    90.19% |     90.28% |     90.28% |     90.28% |           - |           - |           - |
+| single 3-grams |    82.47% |    87.99% |    91.85% |     93.51% |     94.36% |     94.75% |      94.75% |      94.75% |      94.75% |
+| single 4-grams |    80.39% |    86.27% |    91.25% |     93.47% |     95.12% |     96.41% |      96.72% |      96.78% |      96.78% |
+| single 5-grams |    72.48% |    81.49% |    88.42% |     91.74% |     93.80% |     94.72% |      95.08% |      95.48% |      95.56% |
+| single 6-grams |    54.87% |    72.68% |    82.47% |     87.50% |     90.48% |     86.43% |      84.87% |      85.20% |      85.81% |
+| single 7-grams |    49.14% |    61.29% |    71.76% |     81.42% |     81.70% |     68.59% |      64.30% |      63.69% |      63.98% |
