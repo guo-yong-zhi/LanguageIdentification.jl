@@ -40,7 +40,7 @@ langprob("这是一个测试。", topk=3)
 ```
 # Benchmark
 
-We tested four language identification packages: `LanguageIdentification.jl` (this package), [`Languages.jl`](https://github.com/JuliaText/Languages.jl), [`LanguageDetect.jl`](https://github.com/SeanLee97/LanguageDetect.jl), and [`LanguageFinder`](https://github.com/nusretipek/LanguageFinder/tree/main/src) on a hold-out test set. The test set was sourced from [`tatoeba`](https://tatoeba.org) and [`wikipedia`](https://www.wikipedia.org/) and comprised of the 50 languages supported by this package. The complete test results can be found [here](https://github.com/guo-yong-zhi/langid_expirement/blob/main/benchmarks/compare/compare.md).
+We tested four language identification packages: `LanguageIdentification.jl` (this package), [`Languages.jl`](https://github.com/JuliaText/Languages.jl), [`LanguageDetect.jl`](https://github.com/SeanLee97/LanguageDetect.jl), and [`LanguageFinder`](https://github.com/nusretipek/LanguageFinder) on a hold-out test set. The test set was sourced from [`tatoeba`](https://tatoeba.org) and [`wikipedia`](https://www.wikipedia.org/) and comprised of the 50 languages supported by this package. The complete test results can be found [here](https://github.com/guo-yong-zhi/langid_expirement/blob/main/benchmarks/compare/compare.md).
 
 - tatoeba
 
