@@ -39,7 +39,9 @@ function count_all_ngrams(text_list, n, counter = Dict{Vector{UInt8},Float32}();
     end
     counter
 end
-
+function count_all_ngrams(textfile::IO, args...; kwargs...)
+    count_all_ngrams(eachline(textfile), args...; kwargs...)
+end
 # function count_dataset_ngrams(dataset, n; kwargs...)
 #     counters = [Dict{Vector{UInt8},Float32}() for i in 1:n]
 #     for (text, lang) in dataset

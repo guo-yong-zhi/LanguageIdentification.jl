@@ -1,7 +1,7 @@
 name = "LanguageIdentification"
 uuid = "35248bf2-58a5-46a0-9b1d-c0a73a50a105"
 authors = ["guoyongzhi <guo-yong-zhi@outlook.com>"]
-version = "1.0.0"
+version = "1.0.1"
 
 [compat]
 julia = "1.9"
